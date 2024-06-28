@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "spotifytool.client", "spotifytool.client\spotifytool.client.esproj", "{1E0FC2B2-E7D6-4C70-AAD4-3796A7D086C0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpotifyTool.Server", "SpotifyTool.Server\SpotifyTool.Server.csproj", "{EC73F957-190E-43CE-90F4-49D2E483FA8B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E0FC2B2-E7D6-4C70-AAD4-3796A7D086C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E0FC2B2-E7D6-4C70-AAD4-3796A7D086C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E0FC2B2-E7D6-4C70-AAD4-3796A7D086C0}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1E0FC2B2-E7D6-4C70-AAD4-3796A7D086C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E0FC2B2-E7D6-4C70-AAD4-3796A7D086C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E0FC2B2-E7D6-4C70-AAD4-3796A7D086C0}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{EC73F957-190E-43CE-90F4-49D2E483FA8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC73F957-190E-43CE-90F4-49D2E483FA8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC73F957-190E-43CE-90F4-49D2E483FA8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC73F957-190E-43CE-90F4-49D2E483FA8B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D63EBA80-3F48-4AD0-94BE-6BAE0F1C7A9A}
+	EndGlobalSection
+EndGlobal

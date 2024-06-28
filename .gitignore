@@ -1,0 +1,7 @@
+.vs/
+spotifytool.client/.vscode/
+spotifytool.client/obj/
+spotifytool.client/bin/
+
+SpotifyTool.Server/bin/
+SpotifyTool.Server/obj/
