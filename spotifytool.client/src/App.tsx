@@ -1,18 +1,19 @@
 import { useEffect, useState, Fragment } from 'react';
 import './App.css';
 import './About.tsx';
-import Home from "./Home.tsx";
+import Home from "./home/Home";
 import About from './About.tsx';
 import {
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
-import Login from './Login.tsx';
-import CreateAccount from './CreateAccount.tsx';
+import Login from './auth/Login.tsx';
+import CreateAccount from './auth/CreateAccount.tsx';
 import { Container } from '@mui/material';
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
+import AccountSettings from './account/AccountSettings.tsx';
 
 declare module '@mui/material/styles' {
     interface Theme {
@@ -34,7 +35,17 @@ const theme = createTheme({
                 }
             }
         }
-    }
+    },
+
+    palette: {
+        mode: 'dark',
+        primary: {
+            main: '#3f51b5',
+        },
+        secondary: {
+            main: '#f50057',
+        },
+    },
 });
 
 const router = createBrowserRouter([
@@ -61,6 +72,11 @@ const router = createBrowserRouter([
     {
         path: "/home",
         element: <Home />
+    },
+
+    {
+        path: "/account",
+        element: <AccountSettings />
     }
 ]);
 
