@@ -37,6 +37,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddControllers()
+        .AddNewtonsoftJson();
+
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -5,8 +5,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -53,34 +55,25 @@ namespace SpotifyTool.Server.Controllers
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<ActionResult<SafeUser>> PatchUser(int id, JsonPatchDocument<SafeUser> patch)
         {
-            if (id != user.Id)
+            SafeUser fromDB = _context.User.FirstOrDefault(u => u.Id == id);
+            patch.ApplyTo(fromDB, ModelState);
+
+            bool isValid = TryValidateModel(fromDB);
+            if (!isValid)
             {
-                return BadRequest();
+                return BadRequest("Invalid patch request");
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Update(fromDB);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            SafeUser su = GetSafeUser((User)fromDB);
 
-            return NoContent();
+            return Ok(su);
         }
 
         // POST: api/Users
@@ -99,8 +92,6 @@ namespace SpotifyTool.Server.Controllers
 
             _context.User.Add(user);
             await _context.SaveChangesAsync();
-
-            user.Password = null;
 
             SafeUser su = GetSafeUser(user);
 
@@ -130,10 +121,39 @@ namespace SpotifyTool.Server.Controllers
             if (BCrypt.Net.BCrypt.Verify(user.Password, tHash))
             {
                 JwtSecurityToken token = GenerateAccessToken(user.Email);
-                return Ok(new {AccessToken = new JwtSecurityTokenHandler().WriteToken(token)});
+                string refreshToken = Guid.NewGuid().ToString();
+                userObj.First().RefreshToken = refreshToken;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
+                    RefreshToken = refreshToken
+                });
             }
 
             return Unauthorized("Invalid login credentials");
+        }
+
+        [HttpPost("refresh")]
+        public async Task<ActionResult<SafeUser>> RefreshToken(RefreshRequest refreshRequest)
+        {
+            User user = GetUserByRefreshToken(refreshRequest.Token);
+            if (user == null)
+            {
+                return Unauthorized("Bad refresh token");
+            }
+
+            JwtSecurityToken token = GenerateAccessToken(user.Email);
+            string refreshToken = Guid.NewGuid().ToString();
+            user.RefreshToken = refreshToken;
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
+                RefreshToken = refreshToken
+            });
         }
 
         // DELETE: api/Users/5
@@ -152,10 +172,22 @@ namespace SpotifyTool.Server.Controllers
             return NoContent();
         }
 
-        [Authorize]
         private bool UserExists(int id)
         {
             return _context.User.Any(e => e.Id == id);
+        }
+
+        private User GetUserByRefreshToken(string token)
+        {
+            var users = _context.User.Where(e => e.RefreshToken == token);
+            if (users.Count() == 0 || users.Count() > 1)
+            {
+                return null;
+            }
+            else
+            {
+                return users.First();
+            }
         }
 
         private JwtSecurityToken GenerateAccessToken(string email)
@@ -177,6 +209,7 @@ namespace SpotifyTool.Server.Controllers
             return token;
         }
 
+        // Returns a SafeUser object that can be sent as a response (it doesn't contain the password hash)
         private SafeUser GetSafeUser(User user)
         {
             SafeUser su = new SafeUser();

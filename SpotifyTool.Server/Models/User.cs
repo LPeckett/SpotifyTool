@@ -7,5 +7,6 @@ namespace SpotifyTool.Server.Models
     public class User : SafeUser
     {
         public string Password { get; set; }
+        public string? RefreshToken {  get; set; }
     }
 }
