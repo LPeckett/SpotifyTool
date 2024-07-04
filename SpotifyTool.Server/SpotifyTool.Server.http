@@ -1,6 +1,1 @@
 @SpotifyTool.Server_HostAddress = http://localhost:5178
-
-GET {{SpotifyTool.Server_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
