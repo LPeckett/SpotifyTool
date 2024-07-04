@@ -53,6 +53,22 @@ namespace SpotifyTool.Server.Controllers
             return GetSafeUser(user);
         }
 
+        [HttpGet("token")]
+        [Authorize]
+        public async Task<ActionResult<SafeUser>> GetUserByToken()
+        {
+            string head = Request.Headers["Authorization"];
+            string token = head.Split(" ")[1];
+
+            var jsonToken = new JwtSecurityToken(token);
+            string email = jsonToken.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+
+            User user = _context.User.Where(u => u.Email == email).FirstOrDefault();
+            SafeUser su = GetSafeUser(user);
+
+            return Ok(su);
+        }
+
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPatch("{id}")]
@@ -210,7 +226,7 @@ namespace SpotifyTool.Server.Controllers
         }
 
         // Returns a SafeUser object that can be sent as a response (it doesn't contain the password hash)
-        private SafeUser GetSafeUser(User user)
+        private static SafeUser GetSafeUser(User user)
         {
             SafeUser su = new SafeUser();
             su.Email = user.Email;
