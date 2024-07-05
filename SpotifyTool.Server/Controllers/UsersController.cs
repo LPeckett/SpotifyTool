@@ -47,7 +47,7 @@ namespace SpotifyTool.Server.Controllers
 
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new {error = "User not found"});
             }
 
             return GetSafeUser(user);
@@ -81,7 +81,7 @@ namespace SpotifyTool.Server.Controllers
             bool isValid = TryValidateModel(fromDB);
             if (!isValid)
             {
-                return BadRequest("Invalid patch request");
+                return BadRequest(new { error = "Invalid patch request" });
             }
 
             _context.Update(fromDB);
@@ -100,7 +100,12 @@ namespace SpotifyTool.Server.Controllers
             string password = user.Password;
             if (password == null)
             {
-                return BadRequest("Please provide a password");
+                return BadRequest(new { error = "Please provide a password" });
+            }
+
+            if (EmailExists(user.Email))
+            {
+                return BadRequest(new { error = "An account already exists with that email" });
             }
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
@@ -119,19 +124,19 @@ namespace SpotifyTool.Server.Controllers
         {
             if (user.Email == null || user.Password == null)
             {
-                return BadRequest("Please provide a email and password");
+                return BadRequest(new { error = "Please provide a email and password" });
             }
 
             var userObj = _context.User.Where(u => u.Email == user.Email);
             if (userObj.Count() == 0 || userObj.Count() > 1)
             {
-                return Unauthorized("Invalid login credentials");
+                return Unauthorized(new { error = "Invalid login credentials" });
             }
 
             string tHash = userObj.First().Password;
             if (tHash == null)
             {
-                return Unauthorized("Invalid login credentials");
+                return Unauthorized(new { error = "Invalid login credentials" });
             }
 
             if (BCrypt.Net.BCrypt.Verify(user.Password, tHash))
@@ -148,7 +153,7 @@ namespace SpotifyTool.Server.Controllers
                 });
             }
 
-            return Unauthorized("Invalid login credentials");
+            return Unauthorized(new { error = "Invalid login credentials" });
         }
 
         [HttpPost("refresh")]
@@ -157,7 +162,7 @@ namespace SpotifyTool.Server.Controllers
             User user = GetUserByRefreshToken(refreshRequest.Token);
             if (user == null)
             {
-                return Unauthorized("Bad refresh token");
+                return Unauthorized(new { error = "Bad refresh token" });
             }
 
             JwtSecurityToken token = GenerateAccessToken(user.Email);
@@ -179,7 +184,7 @@ namespace SpotifyTool.Server.Controllers
             var user = await _context.User.FindAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new {error = "A user does not exist with the supplied ID"});
             }
 
             _context.User.Remove(user);
@@ -191,6 +196,11 @@ namespace SpotifyTool.Server.Controllers
         private bool UserExists(int id)
         {
             return _context.User.Any(e => e.Id == id);
+        }
+
+        private bool EmailExists(string email)
+        {
+            return _context.User.Any(e => e.Email == email);
         }
 
         private User GetUserByRefreshToken(string token)

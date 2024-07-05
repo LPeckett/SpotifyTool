@@ -14,6 +14,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
 import AccountSettings from './account/AccountSettings.tsx';
+import { CookiesProvider } from 'react-cookie';
 
 declare module '@mui/material/styles' {
     interface Theme {
@@ -80,38 +81,22 @@ const router = createBrowserRouter([
     }
 ]);
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
-}
-
 function App() {
-    const [forecasts, setForecasts] = useState<Forecast[]>();
-
-    useEffect(() => {
-        populateWeatherData();
-    }, []);
 
     return (
         <>
             <ThemeProvider theme={theme}>
                 <Fragment>
                     <CssBaseline />
-                    <Container maxWidth={false} disableGutters sx={{ width: '100vw'}}>
-                        <RouterProvider router={router} />
+                    <Container maxWidth={false} disableGutters sx={{ width: '100vw' }}>
+                        <CookiesProvider>
+                            <RouterProvider router={router} />
+                        </CookiesProvider>
                     </Container>
                 </Fragment>
             </ThemeProvider>
         </>
     );
-
-    async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        const data = await response.json();
-        setForecasts(data);
-    }
 }
 
 export default App;
