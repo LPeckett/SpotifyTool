@@ -1,10 +1,20 @@
 import { Person } from "@mui/icons-material";
 import { Divider, Typography, Box, TextField, Button, Link } from "@mui/material";
 import Image from "mui-image";
+import { useEffect, useState } from "react";
 
 const profileImageSize = 120;
 
 function AccountDetails() {
+
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+
+    useEffect(() => {
+        setUsername(window.sessionStorage["user_username"]);
+        setEmail(window.sessionStorage["user_email"]);
+    }, []);
+
     return (
         <>
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
@@ -21,10 +31,10 @@ function AccountDetails() {
                         style={{ borderRadius: profileImageSize / 2 }} />
 
                     <Typography variant="body1" sx={{ mt: 2 }}>Username</Typography>
-                    <TextField variant="outlined" sx={{ flexGrow: 1, mt: 1, mb: 2, width: "100%" }}></TextField>
+                    <TextField variant="outlined" value={username} sx={{ flexGrow: 1, mt: 1, mb: 2, width: "100%" }}></TextField>
 
                     <Typography variant="body1">Email</Typography>
-                    <TextField variant="outlined" sx={{ flexGrow: 1, mt: 1, mb: 2, width: "100%" }}></TextField>
+                    <TextField variant="outlined" value={email} sx={{ flexGrow: 1, mt: 1, mb: 2, width: "100%" }}></TextField>
 
                     <Box sx={{ alignSelf: "flex-end", mt: 3 }}>
                         <Button variant="outlined" sx={{ mr: 2 }}>Cancel</Button>

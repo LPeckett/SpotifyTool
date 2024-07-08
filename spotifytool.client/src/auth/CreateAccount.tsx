@@ -7,7 +7,7 @@ import { useCookies } from 'react-cookie';
 
 function CreateAccount() {
 
-    const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"])
+    const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
 
     const [signingIn, setSigningIn] = useState(false);
     const [error, setError] = useState("");

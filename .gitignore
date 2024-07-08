@@ -5,3 +5,5 @@ spotifytool.client/bin/
 
 SpotifyTool.Server/bin/
 SpotifyTool.Server/obj/
+
+*.env

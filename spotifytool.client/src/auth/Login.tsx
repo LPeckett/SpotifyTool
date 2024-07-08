@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { access } from 'fs/promises';
 
 function Login() {
 
